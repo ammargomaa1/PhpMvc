@@ -1,0 +1,28 @@
+<?php
+
+namespace Illuminate\Validation;
+
+
+
+trait RulesResolver
+{
+    public static function make($rules)
+    {
+        if (is_string($rules)) {
+            $rules =(array) str_contains($rules,'|') ? explode('|',$rules) : $rules;
+        }
+
+        return array_map(function($rule){
+            if (is_string($rule)) {
+                return static::getRulesFromString($rule);
+            }
+
+            return $rule;
+        },$rules);
+    }
+
+    public static function getRulesFromString(string $rule)
+    {
+        return RulesMapper::resolve(($parts = explode(':',$rule))[0],explode(',',end($parts)));
+    }
+}
